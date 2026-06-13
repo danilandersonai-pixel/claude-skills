@@ -1,0 +1,9 @@
+{
+  "name": "daniil-skills",
+  "description": "Личный набор из 16 скиллов Claude Code Дани: commit, deploy, docker, install-mcp, proxy, ssh-connect, tavily, worktree, ui-ux-pro-max, telegram-bot, telegram-bot-builder, aiogram-framework, fullstack-developer, find-skills, game-setup-and-config, agent-spec-mobile-react-native.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Daniil Shevchenko",
+    "email": "danil.anderson.ai@gmail.com"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "daniil-skills",
+  "description": "Личный набор скиллов Claude Code: коммиты, деплой, Docker, MCP, прокси, SSH, Tavily, worktree, UI/UX, Telegram-боты, aiogram, fullstack и другое.",
+  "owner": {
+    "name": "Daniil Shevchenko",
+    "email": "danil.anderson.ai@gmail.com"
+  },
+  "plugins": [
+    {
+      "name": "daniil-skills",
+      "description": "16 личных скиллов: commit, deploy, docker, install-mcp, proxy, ssh-connect, tavily, worktree, ui-ux-pro-max, telegram-bot, telegram-bot-builder, aiogram-framework, fullstack-developer, find-skills, game-setup-and-config, agent-spec-mobile-react-native.",
+      "author": {
+        "name": "Daniil Shevchenko",
+        "email": "danil.anderson.ai@gmail.com"
+      },
+      "source": "./plugins/daniil-skills",
+      "category": "productivity"
+    }
+  ]
+}
