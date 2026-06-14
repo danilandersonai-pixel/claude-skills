@@ -165,6 +165,44 @@ def collect_mcp():
     return dict(sorted(servers.items()))
 
 
+def find_mcp_registry():
+    """Путь к mcp-catalog.json из репо claude-mcp (источник правды по MCP)."""
+    env = os.environ.get("CLAUDE_MCP_CATALOG")
+    cands = [Path(os.path.expanduser(env))] if env else []
+    cands += [
+        Path("/home/user/claude-mcp/mcp-catalog.json"),
+        HOME / "claude-mcp" / "mcp-catalog.json",
+    ]
+    # рядом с корнем репо claude-skills (../claude-mcp/…)
+    here = Path(__file__).resolve()
+    for parent in here.parents:
+        sib = parent.parent / "claude-mcp" / "mcp-catalog.json"
+        if sib.exists():
+            cands.append(sib)
+            break
+    for c in cands:
+        if c and c.exists():
+            return c
+    return None
+
+
+def collect_mcp_registry():
+    """Серверы из mcp-catalog.json репо claude-mcp: {name: description}."""
+    path = find_mcp_registry()
+    if not path:
+        return {}, None
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}, None
+    out = {}
+    for s in data.get("servers", []):
+        name = s.get("name")
+        if name:
+            out[name] = s.get("description", "")
+    return dict(sorted(out.items())), path
+
+
 def trunc(text, limit=160):
     text = " ".join((text or "").split())
     return text if len(text) <= limit else text[: limit - 1] + "…"
@@ -182,12 +220,16 @@ def md_table(rows):
 def build():
     skills = collect_skills()
     plugins = collect_plugins()
-    mcp = collect_mcp()
+    registry, reg_path = collect_mcp_registry()
+    # локальные/проектные конфиги — то, чего ещё нет в реестре claude-mcp
+    local_mcp = {k: v for k, v in collect_mcp().items() if k not in registry}
+    mcp = {**registry, **local_mcp}
+    src = f" · MCP-реестр: `{reg_path}`" if reg_path else " · MCP-реестр не найден"
     now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
     parts = [
         "# 🧰 Картотека инструментов Claude Code",
         "",
-        f"_Сгенерировано: {now} · файловый слой (`catalog.py`)_",
+        f"_Сгенерировано: {now} · файловый слой (`catalog.py`){src}_",
         "",
         f"## Скиллы ({len(skills)})",
         "",
@@ -202,6 +244,8 @@ def build():
         "> ⚠️ В облачном/мобильном Claude Code часть скиллов и MCP-серверов "
         "инжектится харнессом и не видна этому скрипту. Claude дополняет "
         "таблицу инструментами текущей сессии при генерации картотеки.",
+        "> MCP-реестр читается из `mcp-catalog.json` репо `claude-mcp` "
+        "(подключи его к сессии, чтобы серверы подхватывались автоматически).",
         "",
     ]
     return "\n".join(parts)

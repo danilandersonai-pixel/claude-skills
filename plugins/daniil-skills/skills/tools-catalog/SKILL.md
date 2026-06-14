@@ -24,6 +24,8 @@ description: "Картотека всех инструментов: скиллы
   — версионируется, виден на GitHub с любого устройства.
 - **Живая копия:** `~/.claude/tools-catalog.md` — для быстрого локального
   доступа (в облаке эфемерна, перегенерируется при каждом вызове).
+- **Реестр MCP:** `mcp-catalog.json` в репо `claude-mcp` — источник правды по
+  MCP-серверам. Добавил сервер туда → вызвал картотеку → он в таблице.
 
 ## Workflow
 
@@ -38,6 +40,16 @@ python3 "$SKILL_DIR/catalog.py" --out ~/.claude/tools-catalog.md
 Скрипт сканит `~/.claude/skills`, `~/.claude/plugins`, проектные
 `.claude/skills`, MCP-конфиги (`~/.claude.json`, `.mcp.json`, `claude mcp list`)
 и печатает Markdown-таблицу.
+
+**Источник MCP — реестр `claude-mcp`.** Скрипт автоматически читает
+`mcp-catalog.json` из репо `danilandersonai-pixel/claude-mcp`, если он
+подключён к сессии (ищет `/home/user/claude-mcp/mcp-catalog.json`,
+`~/claude-mcp/...`, соседний с этим репо каталог, либо путь из переменной
+`CLAUDE_MCP_CATALOG`). Серверы из реестра попадают в секцию MCP без
+ручного парсинга `.mcp.json`. Формат — только метаданные (`name`,
+`description`, `transport`, `command`, `env`, `scope`, `tags`), **без
+секретов**. Если `claude-mcp` к сессии не подключён — реестр пуст, и MCP
+нужно дополнить из текущей сессии (Шаг 2).
 
 ### Шаг 2. Дополнить инструментами текущей сессии ⚠️ ВАЖНО
 
